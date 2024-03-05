@@ -13,8 +13,8 @@ cap = cv2.VideoCapture(0)
 image_loc = st.empty()
 while cap.isOpened:
     ret, img = cap.read()
-    if cv2.waitKey() & 0xFF == ord("q"):
-        break
+    #if cv2.waitKey() & 0xFF == ord("q"):
+    #    break
 
     if ret :
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
