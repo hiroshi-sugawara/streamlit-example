@@ -1,40 +1,28 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+import cv2
+import datetime
+from PIL import Image
 
-"""
-# Welcome to Streamlit!
+#インタープリンターオプション　-m streamlit run cloud_cameraTest.pyを記載
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+st.title("finger auth app")
+st.write("single auth ", datetime.date.today())
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+cap = cv2.VideoCapture(0)
+image_loc = st.empty()
+while cap.isOpened:
+    ret, img = cap.read()
+    if cv2.waitKey() & 0xFF == ord("q"):
+        break
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+    if ret :
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.resize(img, (320, 320))
+        img_ = img[85:205, :]
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+        img_ = Image.fromarray(img_)
+        image_loc.image(img_)
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+cap.release()
